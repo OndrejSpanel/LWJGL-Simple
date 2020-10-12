@@ -35,6 +35,20 @@ public class HelloWorld {
 		glfwSetErrorCallback(null).free();
 	}
 
+
+	private class WindowPos {
+	    public int x, y, w, h;
+
+        public WindowPos(int x, int y, int w, int h) {
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+        }
+    }
+
+    private WindowPos pos;
+
 	private void init() {
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
@@ -59,8 +73,26 @@ public class HelloWorld {
 			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
 				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
             if ( key == GLFW_KEY_TAB && action == GLFW_RELEASE ) {
-                boolean maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED) != GL_FALSE;
-                glfwSetWindowAttrib(window, GLFW_MAXIMIZED, maximized ? GLFW_FALSE : GLFW_TRUE);
+                final long monitor = glfwGetWindowMonitor(window);
+                if (monitor == 0) {
+                    final long primaryMonitor = glfwGetPrimaryMonitor();
+                    GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+                    if (mode != null) {
+                        int[] width = new int[1];
+                        int[] height = new int[1];
+                        int[] x = new int[1];
+                        int[] y = new int[1];
+                        glfwGetWindowSize(window, width, height);
+                        glfwGetWindowPos(window, x, y);
+
+                        pos = new WindowPos(x[0], y[0], width[0], height[0]);
+
+                        glfwSetWindowMonitor(window, primaryMonitor, 0, 0, mode.width(), mode.height(), mode.refreshRate());
+                    }
+                } else if (pos != null) {
+                    glfwSetWindowMonitor(window, 0, pos.x, pos.y, pos.w, pos.h, GLFW_DONT_CARE);
+                    pos = null;
+                }
             }
 
 		});
