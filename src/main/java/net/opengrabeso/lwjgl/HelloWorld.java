@@ -58,6 +58,11 @@ public class HelloWorld {
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
 			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
 				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+            if ( key == GLFW_KEY_TAB && action == GLFW_RELEASE ) {
+                boolean maximized = glfwGetWindowAttrib(window, GLFW_MAXIMIZED) != GL_FALSE;
+                glfwSetWindowAttrib(window, GLFW_MAXIMIZED, maximized ? GLFW_FALSE : GLFW_TRUE);
+            }
+
 		});
 
 		// Get the thread stack and push a new frame
